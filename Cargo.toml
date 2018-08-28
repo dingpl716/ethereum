@@ -1,0 +1,5 @@
+[workspace]
+members = ["deps/rox/native/rox_nif"]
+
+[dependencies]
+erlang_nif-sys = ">=0.6.4"
