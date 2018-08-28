@@ -26,7 +26,8 @@ defmodule Ethereum.MixProject do
       # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"},
       # Ethereum official repos
       {:ex_rlp, "~> 0.3.0"},
-      {:merkle_patricia_tree, "~> 0.2.7"}
+      {:merkle_patricia_tree, "~> 0.2.7"},
+      {:rox, "~> 2.0"}
 
       # ArcBlock repos
       # {:ocap_rpc, git: "https://github.com/ArcBlock/ocap-rpc.git", tag: "master"}
