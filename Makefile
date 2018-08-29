@@ -20,7 +20,7 @@ build:
 	@echo "Building the software..."
 	@rm -rf src/_build/dev/lib/{ocap_service,ocap_rpc,ocap_schema};
 	@make format
-	
+
 rebuild:
 	@echo "Rebuilding the software..."
 	@rm src/mix.lock
@@ -98,7 +98,7 @@ watch:
 
 run:
 	@echo "Running the software..."
-	@cd src; iex -S mix phx.server
+	@iex -S mix
 
 submodule:
 	@git submodule update --init --recursive
