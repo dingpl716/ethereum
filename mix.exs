@@ -27,6 +27,7 @@ defmodule Ethereum.MixProject do
       # Ethereum official repos
       {:ex_rlp, "~> 0.3.0"},
       {:merkle_patricia_tree, "~> 0.2.7"},
+      # {:keccakf1600, "~> 2.0.0"},
       {:rox, "~> 2.0"}
 
       # ArcBlock repos

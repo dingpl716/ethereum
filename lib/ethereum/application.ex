@@ -10,6 +10,7 @@ defmodule Ethereum.Application do
     children = [
       # Starts a worker by calling: Ethereum.Worker.start_link(arg)
       # {Ethereum.Worker, arg},
+      DbUtil
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

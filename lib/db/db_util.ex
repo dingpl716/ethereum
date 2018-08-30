@@ -1,13 +1,49 @@
 defmodule DbUtil do
   alias Rox
+  use GenServer
 
+  @db_util {:global, __MODULE__}
   @db_path "/var/data/parity/chains/ethereum/db/906a34e69aec8c0d/archive/db"
-  @column_families ["col7", "col6", "col1", "col0", "col2", "col3", "col4", "col5"]
+  @column_families ["col0", "col1", "col2", "col3", "col4", "col5", "col6", "col7"]
   @opts [max_open_files: 0]
+
+  def start_link(_) do
+    GenServer.start_link(__MODULE__, [], name: @db_util)
+  end
+
+  def get_header(key) do
+    case byte_size(key) do
+      32 -> GenServer.call(@db_util, {:get_header, key})
+      64 -> GenServer.call(@db_util, {:get_header, Base.decode1decode16!(key, case: :lower)})
+    end
+  end
+
+  # call backs
+  def init do
+    {:ok, open_db()}
+  end
 
   def open_db do
     {:ok, db, cfs} = Rox.open(@db_path, @opts, @column_families)
-    {db, cfs}
+
+    col_families = %{
+      state: cfs["col0"],
+      block_header: cfs["col1"],
+      block_body: cfs["col2"],
+      extra: cfs["col3"],
+      trace: cfs["col4"],
+      empty_account_bloom: cfs["col5"],
+      general_info: cfs["col6"],
+      light_client: cfs["col7"]
+    }
+
+    {db, col_families}
+  end
+
+  def handle_call({:get_header, key}, {_, %{block_header: cf}} = gen_server_state) do
+    {:ok, rlp_value} = Rox.get(cf, key)
+    header = BlockHeader.from_rlp(rlp_value)
+    {:reply, header, gen_server_state}
   end
 
   def get_state(key, cfs) do
@@ -19,41 +55,5 @@ defmodule DbUtil do
 
   def get_header(key, cfs) do
     {:ok, value} = Rox.get(cfs["col1"], key)
-
-    [
-      pre_hash,
-      uncle,
-      miner,
-      state_root,
-      transactions_root,
-      receipts_root,
-      logs_bloom,
-      difficulty,
-      height,
-      gas_limit,
-      gas_used,
-      time,
-      extra_data,
-      mix_hash,
-      nonce
-    ] = ExRLP.decode(value)
-
-    %{
-      pre_hash: Base.encode16(pre_hash, case: :lower),
-      uncle: Base.encode16(uncle, case: :lower),
-      miner: Base.encode16(miner, case: :lower),
-      state_root: Base.encode16(state_root, case: :lower),
-      transactions_root: Base.encode16(transactions_root, case: :lower),
-      receipts_root: Base.encode16(receipts_root, case: :lower),
-      logs_bloom: logs_bloom,
-      difficulty: Base.encode16(difficulty, case: :lower),
-      height: :binary.decode_unsigned(height),
-      gas_limit: :binary.decode_unsigned(gas_limit),
-      gas_used: :binary.decode_unsigned(gas_used),
-      time: :binary.decode_unsigned(time) |> DateTime.from_unix(),
-      extra_data: extra_data,
-      mix_hash: Base.encode16(mix_hash, case: :lower),
-      nonce: Base.encode16(nonce, case: :lower)
-    }
   end
 end
