@@ -40,7 +40,7 @@ defmodule DbUtil do
     {db, col_families}
   end
 
-  def handle_call({:get_header, key}, {_, %{block_header: cf}} = gen_server_state) do
+  def handle_call({:get_header, key}, _from, {_, %{block_header: cf}} = gen_server_state) do
     {:ok, rlp_value} = Rox.get(cf, key)
     header = BlockHeader.from_rlp(rlp_value)
     {:reply, header, gen_server_state}
