@@ -1,5 +1,6 @@
 defmodule MPT do
   def get_first_child(root, cfs) do
+    dfs(root, "", cfs)
   end
 
   defp dfs(key, prefix, cfs) when is_binary(key) and is_binary(prefix) do
