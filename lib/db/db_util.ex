@@ -14,7 +14,7 @@ defmodule DbUtil do
   def get_header(key) do
     case byte_size(key) do
       32 -> GenServer.call(@db_util, {:get_header, key})
-      64 -> GenServer.call(@db_util, {:get_header, Base.decode1decode16!(key, case: :lower)})
+      64 -> GenServer.call(@db_util, {:get_header, Base.decode16!(key, case: :lower)})
     end
   end
 
