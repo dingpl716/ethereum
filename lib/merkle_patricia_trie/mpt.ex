@@ -3,13 +3,11 @@ defmodule MPT do
     dfs(root, "", cfs)
   end
 
-  defp dfs(:not_found, _cfs), do: :not_found
-  defp dfs({:ok, node}, prefix, cfs), do: process_node(node, prefix, cfs)
-
   defp dfs(key, prefix, cfs) when is_binary(key) and is_binary(prefix) do
-    key
-    |> DbUtil.get_state(cfs)
-    |> dfs(prefix)
+    case DbUtil.get_state(key, cfs) do
+      {:ok, node} -> node |> ExRLP.decode() |> process_node(prefix, cfs)
+      :not_found -> :not_found
+    end
   end
 
   defp process_node(items, prefix, cfs) when is_list(items) do
