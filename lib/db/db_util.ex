@@ -10,6 +10,13 @@ defmodule DbUtil do
     {db, cfs}
   end
 
+  def get_state(key, cfs) do
+    case Rox.get(cfs["col0"], key) do
+      {:ok, value} -> value
+      :not_found -> :not_found
+    end
+  end
+
   def get_header(key, cfs) do
     {:ok, value} = Rox.get(cfs["col1"], key)
 
