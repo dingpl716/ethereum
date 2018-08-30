@@ -19,7 +19,7 @@ defmodule DbUtil do
   end
 
   # call backs
-  def init do
+  def init(_) do
     {:ok, open_db()}
   end
 
