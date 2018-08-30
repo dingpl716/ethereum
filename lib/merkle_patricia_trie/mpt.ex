@@ -3,15 +3,14 @@ defmodule MPT do
     dfs(root, "", cfs)
   end
 
+  defp dfs(:not_found, _cfs), do: :not_found
+  defp dfs({:ok, node}, prefix, cfs), do: process_node(node, prefix, cfs)
+
   defp dfs(key, prefix, cfs) when is_binary(key) and is_binary(prefix) do
     key
     |> DbUtil.get_state(cfs)
     |> dfs(prefix)
   end
-
-  defp dfs(:not_found, cfs), do: :not_found
-
-  defp dfs({:ok, node}, prefix, cfs), do: process_node(node, prefix, cfs)
 
   defp process_node(items, prefix, cfs) when is_list(items) do
     case length(items) do
