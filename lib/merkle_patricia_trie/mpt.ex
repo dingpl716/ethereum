@@ -5,8 +5,8 @@ defmodule MPT do
 
   defp dfs(key, prefix, cfs) when is_binary(key) and is_binary(prefix) do
     case DbUtil.get_state(key, cfs) do
-      {:ok, node} -> node |> ExRLP.decode() |> process_node(prefix, cfs)
       :not_found -> :not_found
+      node -> node |> ExRLP.decode() |> process_node(prefix, cfs)
     end
   end
 
