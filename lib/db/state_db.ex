@@ -6,6 +6,10 @@ defmodule StateDb do
 
   @spec init(DB.db_name()) :: DB.db()
   def init(_) do
+    init()
+  end
+
+  def init do
     {__MODULE__, nil}
   end
 

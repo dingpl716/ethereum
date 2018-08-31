@@ -13,21 +13,14 @@ defmodule DbUtil do
 
   @spec get_header(binary()) :: %BlockHeader{} | :not_found
   def get_header(key) do
-    bin_key = format_key(key)
+    bin_key = Util.format_key(key)
     GenServer.call(@db_util, {:get_header, bin_key})
   end
 
   @spec get_state(binary()) :: {:ok, binary()} | :not_found
   def get_state(key) do
-    bin_key = format_key(key)
+    bin_key = Util.format_key(key)
     GenServer.call(@db_util, {:get_state, bin_key})
-  end
-
-  defp format_key(key) do
-    case String.valid?(key) do
-      true -> Base.decode16!(key, case: :lower)
-      false -> key
-    end
   end
 
   # call backs
