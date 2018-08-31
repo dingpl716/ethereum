@@ -50,7 +50,7 @@ defmodule Ethereum.RLP do
     decode_item(rest, result)
   end
 
-  def decode_item(<<prefix::bytes-size(1), rest::bytes>>, result) when prefix <= 0xB7 do
+  def decode_item(<<prefix::bytes-size(1), _rest::bytes>>, _result) when prefix <= 0xB7 do
     nil
   end
 

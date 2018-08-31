@@ -1,43 +1,43 @@
 defmodule MPT do
-  def get_first_child(root, cfs) do
-    dfs(root, "", cfs)
+  def get_first_child(root) do
+    dfs(root, "")
   end
 
-  defp dfs(key, prefix, cfs) when is_binary(key) and is_binary(prefix) do
-    case DbUtil.get_state(key, cfs) do
+  defp dfs(key, prefix) when is_binary(key) and is_binary(prefix) do
+    case DbUtil.get_state(key) do
       :not_found -> :not_found
-      node -> node |> ExRLP.decode() |> process_node(prefix, cfs)
+      {:ok, rlp_value} -> rlp_value |> ExRLP.decode() |> process_node(prefix)
     end
   end
 
-  defp process_node(items, prefix, cfs) when is_list(items) do
+  defp process_node(items, prefix) when is_list(items) do
     case length(items) do
-      17 -> process_branch(items, prefix, cfs)
-      2 -> process_extension_leaf(items, prefix, cfs)
+      17 -> process_branch(items, prefix)
+      2 -> process_extension_leaf(items, prefix)
     end
   end
 
-  defp process_branch(items, prefix, cfs) do
+  defp process_branch(items, prefix) do
     {key, index} =
       items
       |> Enum.with_index()
       |> Enum.find(fn {key, _} -> key != "" end)
 
     prefix = prefix <> Integer.to_string(index, 16)
-    dfs(key, prefix, cfs)
+    dfs(key, prefix)
   end
 
-  defp process_extension_leaf([encode_path, value], prefix, cfs) do
+  defp process_extension_leaf([encode_path, value], prefix) do
     path = Base.encode16(encode_path, case: :lower)
 
     case String.first(path) do
       "0" ->
         prefix = prefix <> String.slice(path, 2..String.length(path))
-        dfs(value, prefix, cfs)
+        dfs(value, prefix)
 
       "1" ->
         prefix = prefix <> String.slice(path, 1..String.length(path))
-        dfs(value, prefix, cfs)
+        dfs(value, prefix)
 
       "2" ->
         prefix = prefix <> String.slice(path, 2..String.length(path))

@@ -11,10 +11,22 @@ defmodule DbUtil do
     GenServer.start_link(__MODULE__, [], name: @db_util)
   end
 
+  @spec get_header(binary()) :: %BlockHeader{} | :not_found
   def get_header(key) do
-    case byte_size(key) do
-      32 -> GenServer.call(@db_util, {:get_header, key})
-      64 -> GenServer.call(@db_util, {:get_header, Base.decode16!(key, case: :lower)})
+    bin_key = format_key(key)
+    GenServer.call(@db_util, {:get_header, bin_key})
+  end
+
+  @spec get_state(binary()) :: {:ok, binary()} | :not_found
+  def get_state(key) do
+    bin_key = format_key(key)
+    GenServer.call(@db_util, {:get_state, bin_key})
+  end
+
+  defp format_key(key) do
+    case String.valid?(key) do
+      true -> Base.decode16!(key, case: :lower)
+      false -> key
     end
   end
 
@@ -40,20 +52,25 @@ defmodule DbUtil do
     {db, col_families}
   end
 
+  @doc """
+  Get block header by block hash
+  """
   def handle_call({:get_header, key}, _from, {_, %{block_header: cf}} = gen_server_state) do
-    {:ok, rlp_value} = Rox.get(cf, key)
-    header = BlockHeader.from_rlp(rlp_value)
+    header =
+      case get_value(cf, key) do
+        :not_found -> :not_found
+        {:ok, rlp_value} -> BlockHeader.from_rlp(rlp_value)
+      end
+
     {:reply, header, gen_server_state}
   end
 
-  def get_state(key, cfs) do
-    case Rox.get(cfs["col0"], key) do
-      {:ok, value} -> value
-      :not_found -> :not_found
-    end
+  def handle_call({:get_state, key}, _from, {_, %{state: cf}} = gen_server_state) do
+    state = get_value(cf, key)
+    {:reply, state, gen_server_state}
   end
 
-  def get_header(key, cfs) do
-    {:ok, value} = Rox.get(cfs["col1"], key)
+  def get_value(cf, key) do
+    Rox.get(cf, key)
   end
 end
