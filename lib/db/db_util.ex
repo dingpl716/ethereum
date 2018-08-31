@@ -15,14 +15,18 @@ defmodule DbUtil do
     GenServer.call(@db_util, :get_db)
   end
 
+  @spec get_state(binary()) :: {:ok, binary()} | :not_found
+  def get_state(key) do
+    GenServer.call(@db_util, {:get_state, key})
+  end
+
   @spec get_header(binary()) :: %BlockHeader{} | :not_found
   def get_header(key) do
     GenServer.call(@db_util, {:get_header, key})
   end
 
-  @spec get_state(binary()) :: {:ok, binary()} | :not_found
-  def get_state(key) do
-    GenServer.call(@db_util, {:get_state, key})
+  def get_body(key) do
+    GenServer.call(@db_util, {:get_body, key})
   end
 
   # call backs
@@ -62,6 +66,19 @@ defmodule DbUtil do
       end
 
     {:reply, header, gen_server_state}
+  end
+
+  @doc """
+  Get block body by block hash
+  """
+  def handle_call({:get_body, key}, _from, {_, %{block_body: cf}} = gen_server_state) do
+    body =
+      case get_value(cf, key) do
+        :not_found -> :not_found
+        {:ok, rlp_value} -> BlockBody.from_rlp(rlp_value)
+      end
+
+    {:reply, body, gen_server_state}
   end
 
   def handle_call({:get_state, key}, _from, {_, %{state: cf}} = gen_server_state) do

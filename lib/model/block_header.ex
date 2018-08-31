@@ -18,24 +18,26 @@ defmodule BlockHeader do
   ]
 
   def from_rlp(rlp_value) do
-    [
-      pre_hash,
-      uncle,
-      miner,
-      state_root,
-      transactions_root,
-      receipts_root,
-      logs_bloom,
-      difficulty,
-      height,
-      gas_limit,
-      gas_used,
-      time,
-      extra_data,
-      mix_hash,
-      nonce
-    ] = ExRLP.decode(rlp_value)
+    from_binary(ExRLP.decode(rlp_value))
+  end
 
+  def from_binary([
+        pre_hash,
+        uncle,
+        miner,
+        state_root,
+        transactions_root,
+        receipts_root,
+        logs_bloom,
+        difficulty,
+        height,
+        gas_limit,
+        gas_used,
+        time,
+        extra_data,
+        mix_hash,
+        nonce
+      ]) do
     %BlockHeader{
       pre_hash: Base.encode16(pre_hash, case: :lower),
       uncle: Base.encode16(uncle, case: :lower),
