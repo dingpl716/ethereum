@@ -11,6 +11,10 @@ defmodule DbUtil do
     GenServer.start_link(__MODULE__, [], name: @db_util)
   end
 
+  def get_db do
+    GenServer.call(@db_util, :get_db)
+  end
+
   @spec get_header(binary()) :: %BlockHeader{} | :not_found
   def get_header(key) do
     bin_key = Util.format_key(key)
@@ -43,6 +47,10 @@ defmodule DbUtil do
     }
 
     {db, col_families}
+  end
+
+  def handle_call(:get_db, _from, gen_server_state) do
+    {:reply, gen_server_state, gen_server_state}
   end
 
   @doc """
