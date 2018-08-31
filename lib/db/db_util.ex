@@ -17,14 +17,12 @@ defmodule DbUtil do
 
   @spec get_header(binary()) :: %BlockHeader{} | :not_found
   def get_header(key) do
-    bin_key = Util.format_key(key)
-    GenServer.call(@db_util, {:get_header, bin_key})
+    GenServer.call(@db_util, {:get_header, key})
   end
 
   @spec get_state(binary()) :: {:ok, binary()} | :not_found
   def get_state(key) do
-    bin_key = Util.format_key(key)
-    GenServer.call(@db_util, {:get_state, bin_key})
+    GenServer.call(@db_util, {:get_state, key})
   end
 
   # call backs
@@ -72,6 +70,7 @@ defmodule DbUtil do
   end
 
   def get_value(cf, key) do
-    Rox.get(cf, key)
+    bin_key = Util.format_key(key)
+    Rox.get(cf, bin_key)
   end
 end
