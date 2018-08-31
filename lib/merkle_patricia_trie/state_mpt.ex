@@ -4,7 +4,10 @@ defmodule StateMPT do
 
   def get_account(address, state_root) do
     addr_hash = :keccakf1600.hash(:sha3_256, Util.format_key(address))
-    search_trie(addr_hash, state_root)
+
+    addr_hash
+    |> search_trie(state_root)
+    |> Account.from_rlp()
   end
 
   def search_trie(key, root) do
@@ -14,6 +17,5 @@ defmodule StateMPT do
     StateDb.init()
     |> Trie.new(bin_root)
     |> Trie.get(bin_key)
-    |> Account.from_rlp()
   end
 end
