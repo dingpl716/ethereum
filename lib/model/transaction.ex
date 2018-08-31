@@ -15,7 +15,7 @@ defmodule Transaction do
 
     case transaction.to do
       addr when addr in ["", <<128>>] -> Map.put(transaction, :init, init_or_data)
-      true -> Map.put(transaction, :data, init_or_data)
+      _ -> Map.put(transaction, :data, init_or_data)
     end
   end
 end
