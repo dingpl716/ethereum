@@ -95,11 +95,11 @@ format:
 # 	@make build
 # 	@echo "Watching templates and slides changes..."
 # 	@fswatch -o src/ | xargs -n1 -I{} make build
-#
-# run:
-# 	@echo "Running the software..."
-# 	@iex -S mix
-#
+
+run:
+	@echo "Running the software..."
+	@iex -S mix
+
 # submodule:
 # 	@git submodule update --init --recursive
 #

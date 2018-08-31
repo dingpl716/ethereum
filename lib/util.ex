@@ -1,7 +1,7 @@
 defmodule Util do
   def format_key(key) do
     case String.valid?(key) do
-      true -> Base.decode16!(key, case: :lower)
+      true -> key |> String.downcase() |> Base.decode16!(case: :lower)
       false -> key
     end
   end

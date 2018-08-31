@@ -73,4 +73,10 @@ defmodule DbUtil do
     bin_key = Util.format_key(key)
     Rox.get(cf, bin_key)
   end
+
+  def try_get(cfs, key) do
+    cfs
+    |> Map.values()
+    |> Enum.map(fn cf -> get_value(cf, key) end)
+  end
 end
