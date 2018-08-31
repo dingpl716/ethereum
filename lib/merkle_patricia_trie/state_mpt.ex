@@ -12,8 +12,8 @@ defmodule StateMPT do
     bin_key = Util.format_key(key)
 
     StateDb.init()
-    |> Trie.new(bin_state_root)
-    |> Trie.get(addr_hash)
+    |> Trie.new(bin_root)
+    |> Trie.get(bin_key)
     |> Account.from_rlp()
   end
 end
